@@ -3,24 +3,124 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CEA Castellanos</title>
+    <title>Academia de Conducción CEA Castellanos - Inicio</title>
+    <meta name="description" content="Centro de Enseñanza Automovilística CEA Castellanos. Cursos de conducción profesionales para carro y moto. Obtén tu licencia de manera segura y garantizada.">
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
 
-<div class="container">
-    <div class="card">
-
-        <h1>CEA Castellanos</h1>
-        <p>Sistema Empresarial</p>
-
-        <div class="buttons">
-            <a href="login.html" class="btn">Iniciar Sesión</a>
-            <a href="register.html" class="btn secondary">Crear Usuario</a>
+    <!-- Header / Nav -->
+    <header>
+        <div class="logo">
+            <div class="logo-icon">C</div>
+            CEA <span>Castellanos</span>
         </div>
+        <nav>
+            <ul>
+                <li><a href="#cursos">Cursos</a></li>
+                <li><a href="#tarifas">Tarifas</a></li>
+                <li><a href="#requisitos">Requisitos</a></li>
+                <li><a href="login.html" class="btn-nav" id="btn-ingreso-corp">Ingreso Corporativo</a></li>
+            </ul>
+        </nav>
+    </header>
 
-    </div>
-</div>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-tag">Aprende con profesionales</div>
+        <h1>Formamos Conductores Seguros y <span>Responsables</span></h1>
+        <p>En el Proyecto CEA Castellanos te preparamos con tecnología avanzada, instructores certificados y vehículos de última generación. Tu licencia de conducción de carro o moto está más cerca de lo que imaginas.</p>
+        <div class="hero-buttons">
+            <a href="#cursos" class="btn-primary">Ver Cursos</a>
+            <a href="#requisitos" class="btn-secondary">Requisitos</a>
+        </div>
+    </section>
+
+    <!-- Cursos & Tarifas -->
+    <section class="section" id="cursos">
+        <div class="section-header">
+            <h2>Nuestros Cursos y Licencias</h2>
+            <p>Elige el plan ideal según tus necesidades de aprendizaje y movilidad</p>
+        </div>
+        <div class="grid" id="tarifas">
+            <!-- Curso Moto A2 -->
+            <div class="card" id="curso-moto-a2">
+                <span class="card-icon">🏍️</span>
+                <h3>Licencia Moto (Categoría A2)</h3>
+                <p>Perfecto para conducir motocicletas, motociclos y mototriciclos de cualquier cilindraje. Enfoque en maniobrabilidad y seguridad vial urbana.</p>
+                <div class="price">$650.000 <span>COP / Total</span></div>
+                <ul class="features-list">
+                    <li>15 Horas de Clases Teóricas</li>
+                    <li>15 Horas de Práctica en Moto</li>
+                    <li>Vehículos Yamaha y Suzuki modernos</li>
+                    <li>Preparación para examen teórico-práctico</li>
+                </ul>
+            </div>
+
+            <!-- Curso Carro B1 -->
+            <div class="card" id="curso-carro-b1">
+                <span class="card-icon">🚗</span>
+                <h3>Licencia Carro Particular (B1)</h3>
+                <p>Aprende a conducir automóviles, camperos, camionetas y microbuses de servicio particular. Desarrolla confianza al volante en calles y carreteras.</p>
+                <div class="price">$980.000 <span>COP / Total</span></div>
+                <ul class="features-list">
+                    <li>20 Horas de Clases Teóricas</li>
+                    <li>20 Horas de Práctica en Carro</li>
+                    <li>Simuladores de conducción de última generación</li>
+                    <li>Acompañamiento en todo el trámite</li>
+                </ul>
+            </div>
+
+            <!-- Curso Público C1 -->
+            <div class="card" id="curso-carro-c1">
+                <span class="card-icon">🚕</span>
+                <h3>Licencia Servicio Público (C1)</h3>
+                <p>Para conducir automóviles, camperos, camionetas y microbuses destinados al servicio público. Maximiza tus oportunidades laborales.</p>
+                <div class="price">$1.200.000 <span>COP / Total</span></div>
+                <ul class="features-list">
+                    <li>30 Horas de Clases Teóricas</li>
+                    <li>30 Horas de Práctica Certificada</li>
+                    <li>Conducción defensiva y transporte de pasajeros</li>
+                    <li>Examen psicosensométrico incluido</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- Requisitos y Horarios -->
+    <section class="section" id="requisitos">
+        <div class="section-header">
+            <h2>Horarios y Requisitos de Inscripción</h2>
+            <p>Prepárate antes de iniciar tus clases en la academia</p>
+        </div>
+        
+        <div class="info-row">
+            <!-- Requisitos -->
+            <div class="info-box" id="box-requisitos">
+                <h3>Requisitos Básicos</h3>
+                <ul>
+                    <li><strong>Edad Mínima:</strong> Tener mínimo 16 años cumplidos para servicio particular, y 18 años para servicio público.</li>
+                    <li><strong>Documentación:</strong> Cédula de Ciudadanía, Tarjeta de Identidad o Cédula de Extranjería original y vigente.</li>
+                    <li><strong>Registro RUNT:</strong> Estar inscrito previamente en el Registro Único Nacional de Tránsito (RUNT).</li>
+                    <li><strong>Exámenes Médicos:</strong> Aprobar el examen físico, mental y de coordinación motriz en un Centro de Reconocimiento de Conductores (CRC) autorizado.</li>
+                </ul>
+            </div>
+
+            <!-- Horarios -->
+            <div class="info-box" id="box-horarios">
+                <h3>Horarios de Clases</h3>
+                <ul>
+                    <li><strong>Clases Teóricas:</strong> Lunes a Viernes (08:00 - 12:00, 18:00 - 21:00) y Sábados (08:00 - 13:00).</li>
+                    <li><strong>Clases Prácticas:</strong> Lunes a Sábado de 06:00 a 20:00 (Programación flexible coordinada con el instructor).</li>
+                    <li><strong>Atención Administrativa:</strong> Lunes a Viernes de 08:00 a 18:00 y Sábados de 08:00 a 13:00.</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <footer style="text-align: center; padding: 40px; border-top: 1px solid var(--border-color); color: var(--text-muted); font-size: 0.9rem;">
+        &copy; 2026 Proyecto CEA Castellanos. Todos los derechos reservados. Sistema Seguro con Node.js y MySQL.
+    </footer>
 
 </body>
 </html>

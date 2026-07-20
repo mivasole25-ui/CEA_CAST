@@ -1,80 +1,46 @@
 const express = require('express');
 const cors = require('cors');
-const fs = require('fs');
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '../.env') });
+const { initializeDatabase } = require('./config/db');
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
+// Middlewares
 app.use(cors());
 app.use(express.json());
 
-const USERS_FILE = './users.json';
+// Servir archivos estáticos del frontend
+app.use(express.static(path.join(__dirname, '../frontend')));
 
-// Registrar usuario
-app.post('/register', (req, res) => {
+// Rutas de la API
+const authRoutes = require('./routes/authRoutes');
+const studentRoutes = require('./routes/studentRoutes');
+const vehicleRoutes = require('./routes/vehicleRoutes');
+const appointmentRoutes = require('./routes/appointmentRoutes');
+const reportRoutes = require('./routes/reportRoutes');
 
-    const { nombre, correo, password } = req.body;
+app.use('/api/auth', authRoutes);
+app.use('/api/students', studentRoutes);
+app.use('/api/vehicles', vehicleRoutes);
+app.use('/api/appointments', appointmentRoutes);
+app.use('/api/reports', reportRoutes);
 
-    if (!nombre || !correo || !password) {
-        return res.status(400).json({
-            message: 'Todos los campos son obligatorios'
-        });
+// Si ninguna ruta de la API coincide, servir el index.html
+app.get('*', (req, res, next) => {
+    // Si la petición es para una ruta de la API, no servir index.html
+    if (req.path.startsWith('/api/')) {
+        return next();
     }
-
-    let users = [];
-
-    if (fs.existsSync(USERS_FILE)) {
-        users = JSON.parse(fs.readFileSync(USERS_FILE));
-    }
-
-    const existe = users.find(user => user.correo === correo);
-
-    if (existe) {
-        return res.status(400).json({
-            message: 'El usuario ya existe'
-        });
-    }
-
-    users.push({ nombre, correo, password });
-
-    fs.writeFileSync(USERS_FILE, JSON.stringify(users, null, 2));
-
-    res.json({
-        message: 'Usuario registrado correctamente'
-    });
-
+    res.sendFile(path.join(__dirname, '../frontend/index.html'));
 });
 
-// Login
-app.post('/login', (req, res) => {
-
-    const { correo, password } = req.body;
-
-    if (!fs.existsSync(USERS_FILE)) {
-        return res.status(400).json({
-            message: 'No existen usuarios registrados'
-        });
-    }
-
-    const users = JSON.parse(fs.readFileSync(USERS_FILE));
-
-    const user = users.find(
-        u => u.correo === correo && u.password === password
-    );
-
-    if (!user) {
-        return res.status(401).json({
-            message: 'Correo o contraseña incorrectos'
-        });
-    }
-
-    res.json({
-        message: 'Inicio de sesión exitoso',
-        user
+// Inicializar base de datos y arrancar el servidor
+initializeDatabase().then(() => {
+    app.listen(PORT, () => {
+        console.log(`Servidor ejecutándose en: http://127.0.0.1:${PORT}`);
     });
-
-});
-
-app.listen(PORT, () => {
-    console.log(`Servidor ejecutándose en http://localhost:${PORT}`);
+}).catch(err => {
+    console.error('Error durante la inicialización del servidor:', err);
 });

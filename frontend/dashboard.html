@@ -3,17 +3,374 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
-    <link rel="stylesheet" href="css/styles.css">
+    <title>Panel de Control - CEA Castellanos</title>
+    <link rel="stylesheet" href="css/dashboard.css">
 </head>
 <body>
 
-<div class="container">
-    <div class="card">
-        <h1>Bienvenido a CEA Castellanos</h1>
-        <p>Acceso exitoso al sistema.</p>
-    </div>
-</div>
+    <!-- Contenedor de Alertas Dinámicas -->
+    <div id="alert-container"></div>
 
+    <div class="dashboard-layout">
+        
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div style="font-family: 'Outfit', sans-serif; font-size: 1.4rem; font-weight: 800; color: #fff;">
+                    CEA <span style="color: #3b82f6;">Castellanos</span>
+                </div>
+            </div>
+
+            <!-- Menú del Administrador -->
+            <ul class="sidebar-menu" id="menu-admin" style="display: none;">
+                <li class="sidebar-item active" onclick="switchPanel('admin-resumen')">📊 Resumen</li>
+                <li class="sidebar-item" onclick="switchPanel('admin-agenda')">📅 Clases Programadas</li>
+                <li class="sidebar-item" onclick="switchPanel('admin-crear')">➕ Asignar Clase</li>
+                <li class="sidebar-item" onclick="switchPanel('admin-auditoria')">🔍 Auditoría de Horas</li>
+                <li class="sidebar-item" onclick="switchPanel('admin-vehiculos')">🚘 Monitoreo Vehicular</li>
+            </ul>
+
+            <!-- Menú del Instructor -->
+            <ul class="sidebar-menu" id="menu-instructor" style="display: none;">
+                <li class="sidebar-item active" onclick="switchPanel('instructor-agenda')">📅 Mi Agenda</li>
+                <li class="sidebar-item" onclick="switchPanel('instructor-alumnos')">👥 Mis Alumnos</li>
+                <li class="sidebar-item" onclick="switchPanel('instructor-preop')">📝 Checklist Vehicular</li>
+            </ul>
+
+            <!-- Panel de Usuario y Cierre de Sesión -->
+            <div class="user-info-panel">
+                <div class="user-tag">
+                    <span class="user-name" id="user-display-name">Cargando...</span>
+                    <span class="user-role" id="user-display-role">Cargando...</span>
+                </div>
+                <button class="btn-logout" onclick="logout()">
+                    <span>🚪 Cerrar Sesión</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            
+            <div class="welcome-banner">
+                <div>
+                    <h1 id="welcome-text">¡Bienvenido al CEA!</h1>
+                    <p id="current-date-text">Cargando fecha...</p>
+                </div>
+            </div>
+
+            <!-- ========================================== -->
+            <!-- PANELES DEL ADMINISTRADOR                  -->
+            <!-- ========================================== -->
+
+            <!-- 1. RESUMEN (ADMIN) -->
+            <section id="admin-resumen" class="dashboard-panel active">
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <span class="metric-title">Clases Programadas</span>
+                        <span class="metric-value" id="metric-appointments-count">0</span>
+                        <span class="metric-desc">Agendamientos en el sistema</span>
+                    </div>
+                    <div class="metric-card">
+                        <span class="metric-title">Alumnos Registrados</span>
+                        <span class="metric-value" id="metric-students-count">0</span>
+                        <span class="metric-desc">Alumnos activos en el CEA</span>
+                    </div>
+                    <div class="metric-card">
+                        <span class="metric-title">Flota de Vehículos</span>
+                        <span class="metric-value" id="metric-vehicles-count">0</span>
+                        <span class="metric-desc">Carros y motos operando</span>
+                    </div>
+                </div>
+
+                <div class="content-block">
+                    <h2>Últimas Clases Agendadas</h2>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Alumno</th>
+                                    <th>Instructor</th>
+                                    <th>Vehículo</th>
+                                    <th>Tipo</th>
+                                    <th>Fecha</th>
+                                    <th>Hora</th>
+                                    <th>Duración</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-latest-appointments-table">
+                                <!-- Filas dinámicas -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 2. AGENDA COMPLETA (ADMIN) -->
+            <section id="admin-agenda" class="dashboard-panel">
+                <div class="content-block">
+                    <h2>Calendario y Registro General de Clases</h2>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Hora</th>
+                                    <th>Alumno</th>
+                                    <th>Instructor</th>
+                                    <th>Vehículo</th>
+                                    <th>Tipo</th>
+                                    <th>Duración</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-all-appointments-table">
+                                <!-- Filas dinámicas -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 3. CREAR CLASE (ADMIN) -->
+            <section id="admin-crear" class="dashboard-panel">
+                <div class="content-block" style="max-width: 800px;">
+                    <h2>Asignar y Programar Clase</h2>
+                    <form id="form-create-appointment" onsubmit="handleCreateAppointment(event)">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="select-student">Alumno</label>
+                                <select id="select-student" class="form-control" required>
+                                    <option value="" disabled selected>Seleccione un alumno</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="select-instructor">Instructor</label>
+                                <select id="select-instructor" class="form-control" required>
+                                    <option value="" disabled selected>Seleccione un instructor</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="select-vehicle">Vehículo (Solo Activos)</label>
+                                <select id="select-vehicle" class="form-control" required>
+                                    <option value="" disabled selected>Seleccione un vehículo</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="select-class-type">Tipo de Clase</label>
+                                <select id="select-class-type" class="form-control" required>
+                                    <option value="teoria">Teoría</option>
+                                    <option value="practica">Práctica</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="input-date">Fecha de la Clase</label>
+                                <input type="date" id="input-date" class="form-control" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="input-time">Hora de Inicio</label>
+                                <input type="time" id="input-time" class="form-control" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="input-duration">Duración (En horas)</label>
+                                <input type="number" id="input-duration" class="form-control" min="1" max="4" value="2" required>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 20px;">
+                            <button type="submit" class="btn-primary" style="width: 100%;">Programar Clase</button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <!-- 4. AUDITORÍA (ADMIN) -->
+            <section id="admin-auditoria" class="dashboard-panel">
+                <div class="content-block">
+                    <h2>Auditoría e Informe de Horas</h2>
+                    
+                    <div class="search-box">
+                        <select id="audit-type" class="form-control" style="width: 200px;">
+                            <option value="alumno">Buscar Alumnos</option>
+                            <option value="instructor">Buscar Instructores</option>
+                        </select>
+                        <input type="text" id="audit-search-input" class="form-control" placeholder="Escribe nombre o identificación...">
+                        <button class="btn-search" onclick="runAudit()">Buscar</button>
+                    </div>
+
+                    <div class="table-container">
+                        <table>
+                            <thead id="audit-table-header">
+                                <!-- Encabezados dinámicos -->
+                            </thead>
+                            <tbody id="audit-table-body">
+                                <!-- Filas dinámicas -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 5. VEHÍCULOS Y REPORTES (ADMIN) -->
+            <section id="admin-vehiculos" class="dashboard-panel">
+                <div class="content-block">
+                    <h2>Estado y Monitoreo de la Flota</h2>
+                    <div class="vehicles-grid" id="admin-vehicles-grid">
+                        <!-- Tarjetas de vehículos dinámicas -->
+                    </div>
+                </div>
+
+                <div class="content-block">
+                    <h2>Últimos Reportes Preoperacionales Recibidos</h2>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Placa</th>
+                                    <th>Instructor</th>
+                                    <th>Frenos</th>
+                                    <th>Luces</th>
+                                    <th>Llantas</th>
+                                    <th>Fluidos</th>
+                                    <th>Espejos</th>
+                                    <th>Observaciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-preoperational-table">
+                                <!-- Filas de reportes -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+
+            <!-- ========================================== -->
+            <!-- PANELES DEL INSTRUCTOR                     -->
+            <!-- ========================================== -->
+
+            <!-- 1. MI AGENDA (INSTRUCTOR) -->
+            <section id="instructor-agenda" class="dashboard-panel">
+                <div class="content-block">
+                    <h2>Mis Clases Programadas</h2>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Hora</th>
+                                    <th>Alumno</th>
+                                    <th>Vehículo</th>
+                                    <th>Placa</th>
+                                    <th>Tipo</th>
+                                    <th>Duración</th>
+                                </tr>
+                            </thead>
+                            <tbody id="instructor-schedule-table">
+                                <!-- Filas de agenda -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 2. MIS ALUMNOS (INSTRUCTOR) -->
+            <section id="instructor-alumnos" class="dashboard-panel">
+                <div class="content-block">
+                    <h2>Ficha de Progreso de mis Alumnos (Semana Actual)</h2>
+                    <p style="color: var(--text-muted); margin-bottom: 25px;">Alumnos asignados explícitamente en tu agenda para esta semana.</p>
+                    <div class="students-grid" id="instructor-students-grid">
+                        <!-- Tarjetas de alumnos con barras de progreso -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- 3. CHECKLIST PREOPERACIONAL (INSTRUCTOR) -->
+            <section id="instructor-preop" class="dashboard-panel">
+                <div class="content-block" style="max-width: 800px;">
+                    <h2>Formulario Checklist Preoperacional Diario</h2>
+                    <p style="color: var(--text-muted); margin-bottom: 25px;">Obligatorio diligenciar antes de iniciar tus clases prácticas diarias en el vehículo asignado.</p>
+                    
+                    <form id="form-preoperational" onsubmit="handlePreoperationalSubmit(event)">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="preop-select-vehicle">Vehículo a Inspeccionar</label>
+                                <select id="preop-select-vehicle" class="form-control" required>
+                                    <option value="" disabled selected>Seleccione el vehículo</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="preop-date">Fecha de Inspección</label>
+                                <input type="date" id="preop-date" class="form-control" required>
+                            </div>
+                        </div>
+
+                        <div class="checklist-grid">
+                            <!-- Frenos -->
+                            <div class="checklist-item">
+                                <span>Frenos</span>
+                                <div class="checklist-radios">
+                                    <label><input type="radio" name="brakes" value="bueno" checked> Bueno</label>
+                                    <label><input type="radio" name="brakes" value="malo"> Malo</label>
+                                </div>
+                            </div>
+                            <!-- Luces -->
+                            <div class="checklist-item">
+                                <span>Luces</span>
+                                <div class="checklist-radios">
+                                    <label><input type="radio" name="lights" value="bueno" checked> Bueno</label>
+                                    <label><input type="radio" name="lights" value="malo"> Malo</label>
+                                </div>
+                            </div>
+                            <!-- Llantas -->
+                            <div class="checklist-item">
+                                <span>Llantas</span>
+                                <div class="checklist-radios">
+                                    <label><input type="radio" name="tires" value="bueno" checked> Bueno</label>
+                                    <label><input type="radio" name="tires" value="malo"> Malo</label>
+                                </div>
+                            </div>
+                            <!-- Fluidos -->
+                            <div class="checklist-item">
+                                <span>Líquidos / Fluidos</span>
+                                <div class="checklist-radios">
+                                    <label><input type="radio" name="fluids" value="bueno" checked> Bueno</label>
+                                    <label><input type="radio" name="fluids" value="malo"> Malo</label>
+                                </div>
+                            </div>
+                            <!-- Espejos -->
+                            <div class="checklist-item">
+                                <span>Espejos retrovisores</span>
+                                <div class="checklist-radios">
+                                    <label><input type="radio" name="mirrors" value="bueno" checked> Bueno</label>
+                                    <label><input type="radio" name="mirrors" value="malo"> Malo</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label for="preop-observations">Observaciones / Detalles de Falla</label>
+                            <textarea id="preop-observations" class="form-control" rows="4" placeholder="Describe cualquier hallazgo relevante..."></textarea>
+                        </div>
+
+                        <div style="margin-top: 20px;">
+                            <button type="submit" class="btn-primary" style="width: 100%;">Enviar Reporte Preoperacional</button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Scripts de Autenticación y Control del Dashboard -->
+    <script src="js/auth.js"></script>
+    <script src="js/dashboard.js"></script>
 </body>
 </html>
